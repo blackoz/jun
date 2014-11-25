@@ -1,0 +1,67 @@
+import maya.cmds as cmds
+from rigWorkshop.ws_user.jun.utils.logger import logger
+
+
+def bindLike(oldGeo=None, newGeos=None):
+        """ 
+        @brief : Bind a list of given or selected geometries like another geometry.
+        @return : Success (boolean)
+        
+        ARGS :
+                @param oldGeo - String/None - Geometry to get the skinCluster from.If None, use the first selected object.
+                @param newGeos - List/None - List of geometries to bind like the oldGeo one.If None, use every selected objects but the first one.
+        """
+        
+        if oldGeo is None and newGeos is None :
+                getSel = cmds.ls(sl=True)
+                if len(getSel) < 2 :
+                        logger.error("Select at least two geometries and try again.") 
+                        return False
+                else :
+                        oldGeo = getSel[0]
+                        newGeos = getSel[1:]
+        
+        
+        if oldGeo is None and newGeo is None :
+                logger.error("Select at least two geometries and try again.") 
+                return False
+        else :
+                fromSkin = list(getDeformersFromGeo(oldGeo, ['skinCluster']))[0][0]
+
+                infsList = cmds.skinCluster(fromSkin, q=True, influence=True)
+                maxInf = cmds.skinCluster(fromSkin, q=True, maximumInfluences=True)
+                
+                for eachGeo in newGeos :
+                        geoShape = cmds.listRelatives(eachGeo, type='shape')
+
+                        cmds.select(eachGeo, r=True)
+                        for eachInf in infsList :
+                                cmds.select(eachInf, add=True)
+                                
+                        toSkin = cmds.skinCluster(toSelectedBones=True, ignoreBindPose=True, maximumInfluences=maxInf, dropoffRate=10)[0]
+                        cmds.copySkinWeights(ss=fromSkin, noMirror=True, ds=toSkin, surfaceAssociation="closestPoint", influenceAssociation="closestJoint")
+                        
+                        
+                return True
+            
+def getDeformersFromGeo(geoName, filter=None): 
+        """ 
+        @brief : Get a list of every deformer on the given geometry transform.
+        @return : Generator, list of Tuple (deformerName, deformerType)
+        
+        ARGS :
+                @param geoName - String - Name of the geometry to get the deformer from.
+                @param filter - List - Only return the deformer of the given types.
+        """
+        
+        ## Get deformers
+        for eachNode in iter(cmds.listHistory(geoName)) :
+                if cmds.nodeType(eachNode, inherited=True)[0] == 'geometryFilter' :
+                        
+                        nodeType = cmds.objectType(eachNode)
+                        if filter is None :
+                                yield (eachNode, nodeType)
+                        elif not filter is None and nodeType in filter :
+                                yield (eachNode, nodeType)
+                                
+bindLike()                                

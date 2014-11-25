@@ -1,0 +1,77 @@
+10
+
+dir
+81334
+http://pt/src/trunk/maya/rnkRig/rigWorkshop/ws_user/jun
+http://pt/src
+
+
+
+2014-11-13T23:33:49.903225Z
+81113
+jkim
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+b10b952b-2a70-497f-b83e-098e68efdd81
+
+__init__.py
+file
+
+
+
+
+2014-09-25T01:04:27.000000Z
+d41d8cd98f00b204e9800998ecf8427e
+2014-10-24T00:25:56.394333Z
+80132
+jkim
+has-props
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+0
+
+plugin
+dir
+
+rigCmds
+dir
+
+rigData
+dir
+
+rigFunctions
+dir
+
+utils
+dir
+
